@@ -15,7 +15,7 @@ function select_image() {
 }
 
 function clone_image() {
-  qemu-img convert -f qcow2 ${VMFILES}/images/${BASE_IMAGE} ${VMFILES}/disk/${SERVERNAME}.img
+  qemu-img convert -O qcow2 ${VMFILES}/images/${BASE_IMAGE} ${VMFILES}/disk/${SERVERNAME}.img
 }
 
 function generate_iso () {

@@ -1,8 +1,8 @@
 #!/bin/bash
 set -ue
 
-VMFILES=${VMFILES:-~/VMFILES}
-mkdir -p $VMFILES/{iso,disk,images,metadata}
+cd "$(dirname $(readlink -f "${BASH_SOURCE}"))"
+source config.sh
 
 function print_help() {
   echo -e "Required parameters:"
@@ -16,17 +16,12 @@ function print_help() {
 }
 
 function select_image() {
-  case ${DISTRIBUTION} in
-    "bionic") 
-       export BASE_IMAGE="bionic-server-cloudimg-amd64.img"
-       export OSVARIANT="ubuntu18.04"
-       ;;
-    "xenial") 
-       export BASE_IMAGE="xenial-server-cloudimg-amd64-disk1.img"
-       export OSVARIANT="ubuntu16.04"
-       ;;
-    *) return 1 ;;
-  esac
+  if [ ${DISTRO_IMAGES[${DISTRIBUTION}]+_} ]; then
+		export OSVARIANT=${DISTRO_OSVARIANT[$DISTRIBUTION]}
+		export BASE_IMAGE=$(basename ${DISTRO_IMAGES[$DISTRIBUTION]})
+  else
+		return 1;
+	fi
 }
 
 function clone_image() {
@@ -41,11 +36,14 @@ function generate_iso () {
   local server_metadata=${VMFILES}/metadata/${SERVERNAME}
   mkdir -p ${server_metadata}
   echo "instance-id: $(uuidgen)" > ${server_metadata}/meta-data
+  echo "local-hostname: ${SERVERNAME}" > ${server_metadata}/meta-data
+
   
   cat <<EOF >${server_metadata}/user-data
 #cloud-config
 growpart: { mode: auto }
 hostname: ${SERVERNAME}
+local_hostname: ${SERVERNAME}
 power_state: { mode: reboot }
 ssh_authorized_keys:
   - $(cat ~/.ssh/id_rsa.pub || echo "")
@@ -67,16 +65,21 @@ function install_vm() {
     --noautoconsole
 }
 
-while getopts "n:d:s:c:" arg;
+if (( $# == 0 )); then
+	print_help; exit 1
+fi
+
+while getopts "n:d:s:c:h" opt;
 do
-  case $arg in
+  case $opt in
     n) SERVERNAME=${OPTARG} ;;
     d) DISTRIBUTION=${OPTARG} ;;
     s) DISKSIZE=${OPTARG} ;;
     c) VIRSHCONNECTPARAM="--connect ${OPTARG}" ;;
     i) NETWORK=${OPTARG} ;;
-    *) print_help ;;
+    h|*) print_help; exit 1;;
   esac
+
 done
 
 DISKSIZE=${DISKSIZE:-DONT_RESIZE}

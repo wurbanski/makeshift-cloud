@@ -85,6 +85,7 @@ using domain: ${DOMAIN}
 EOT
 
 generate_config >${NETWORK_NAME}.xml
+editor ${NETWORK_NAME}.xml
 echo Adding new network...
 virsh net-create --file ${NETWORK_NAME}.xml
 rc=$?

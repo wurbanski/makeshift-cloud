@@ -12,7 +12,6 @@ function print_help() {
   echo -e "-s\t<main disk size, for example: '-s 10G' >"
   echo -e "-c\t<virsh connection string>"
   echo -e "-i\t<network name to use with main network interface>\n"
-  exit 1
 }
 
 function select_image() {

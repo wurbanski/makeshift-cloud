@@ -68,7 +68,7 @@ if (( $# == 0 )); then
 	print_help; exit 1
 fi
 
-while getopts "n:d:s:c:h" opt;
+while getopts "n:d:s:c:i:h" opt;
 do
   case $opt in
     n) SERVERNAME=${OPTARG} ;;

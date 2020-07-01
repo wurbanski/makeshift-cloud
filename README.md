@@ -1,5 +1,9 @@
 # makeshift-cloud
 
+## Introduction (in Polish)
+
+[![Nine Fives Labs: \[04\] Masz Linuksa? Masz chmurę!* ](https://img.youtube.com/vi/ZqDPaKCvkfU/0.jpg)](https://www.youtube.com/watch?v=ZqDPaKCvkfU)
+
 ## Create network
 
 ```text
